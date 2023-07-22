@@ -1,0 +1,154 @@
+<!-- empty cart -->
+<div class="container" *ngIf="allCart.length==0">
+  <div class="row">
+    <div class="col text-center">
+      <img src="https://statementclothing.net/images/cart.gif" alt="">
+      <h3>Your Cart is Empty</h3>
+      <button class="btn btn-dark mt-4 mb-4">Shop More</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- cart with content -->
+<div class="container" *ngIf="allCart.length!==0">
+  <div class="row">
+    <div class="col-6">
+      <!-- table -->
+      <h1 class="text-center">Product Summary</h1>
+      <table class="mb-5 mt-5 shadow">
+        <thead>
+          <tr>
+            <th class="p-3 border">No</th>
+            <th class="p-3 border">Name</th>
+            <th class="p-3 border">Image</th>
+            <th class="p-3 border">Quantity</th>
+            <th class="p-3 border">Price</th>
+            <th class="p-3 border">Action</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let cart of allCart;let i=index">
+          <td class="p-3 border">{{i+1}}</td>
+          <td class="p-3 border">{{cart.title}}</td>
+          <td class="p-3 border"><img width="100px" height="100px" [src]="cart.image" alt=""></td>
+          <td class="p-3 border">
+            <div class="d-flex">
+              <button class="btn" (click)="decrementCart(cart.id)">-</button>
+              <input type="text" class="form-control" readonly value="{{cart.quantity}}">
+              <button class="btn" (click)="incrementCart(cart.id)">+</button>
+            </div>
+          </td>
+          <td class="p-3 border">{{cart.price}}</td>
+          <td class="p-3 border"><i class="fa-solid fa-trash" (click)=" removecart(cart.id)"></i></td>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-6 card mt-5 mb-5 p-3 shadow">
+      <!-- summary -->
+      <h3>Price: ${{totalprice}}</h3>
+      <h2>Discount: 5%</h2>
+      <h1>Grand Total: <span class="text-danger">${{totalprice}}</span></h1>
+      <!-- check out button -->
+      <div class="text-center m-5">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Check Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Check out details</h1>
+        <button type="button" (click)="modalClose()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- form -->
+        <form *ngIf="!paymentStatus" [formGroup]="checkForm" (ngSubmit)="submitPay()">
+          <h4>Enter your delivery details</h4>
+          <div class="form-floating mb-3">
+            <input name="name" formControlName="name" type="text" class="form-control" id="floatingInput"
+              placeholder="Enter your name">
+            <label for="floatingInput">Enter Name</label>
+            <div *ngIf="this.checkForm.get('name')?.errors && this.checkForm.get('name')?.touched" class="text-danger">
+              Invalid Data</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input name="houseNumber" formControlName="houseNumber" type="text" class="form-control" id="floatingInput"
+              placeholder="House Number">
+            <label for="floatingInput">House Number</label>
+            <div *ngIf="this.checkForm.get('houseNumber')?.errors && this.checkForm.get('houseNumber')?.touched"
+              class="text-danger">Invalid Data</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input name="streetName" formControlName="streetName" type="text" class="form-control" id="floatingPassword"
+              placeholder="Street Name">
+            <label for="floatingPassword">Street Name</label>
+            <div *ngIf="this.checkForm.get('streetName')?.errors && this.checkForm.get('streetName')?.touched"
+              class="text-danger">Invalid Data</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input name="state" formControlName="state" type="text" class="form-control" id="floatingInput"
+              placeholder="State">
+            <label for="floatingInput">Enter State</label>
+            <div *ngIf="this.checkForm.get('state')?.errors && this.checkForm.get('state')?.touched"
+              class="text-danger">Invalid Data</div>
+          </div>
+          <div class="form-floating mb-3">
+            <input name="phoneNumber" formControlName="phoneNumber" type="text" class="form-control" id="floatingInput"
+              placeholder="Phone Number">
+            <label for="floatingInput">Phone Number</label>
+            <div *ngIf="this.checkForm.get('phoneNumber')?.errors && this.checkForm.get('phoneNumber')?.touched"
+              class="text-danger">Invalid Data</div>
+          </div>
+          <!-- proceed to pay -->
+          <div class="text-center">
+            <button class="btn btn-success">Proceed to pay</button>
+          </div>
+        </form>
+
+        <!-- to show address details -->
+        <div *ngIf="paymentStatus">
+          <h5>Delivery Address Details</h5>
+          <p>{{username}}</p>
+          <p>{{houseno}}</p>
+          <p>{{street}}</p>
+          <p>{{state}}</p>
+          <p>{{phoneno}}</p>
+        </div>
+
+        <!-- Total price and discount -->
+        <div class="d-flex justify-content-between">
+          <h3>Total price: ${{totalprice}}</h3>
+          <h4 (click)="offerClick()" *ngIf="!discountClicks">Offers: <i class="fa-solid fa-tag"></i></h4>
+        </div>
+
+        <!-- Discount -->
+        <div class="d-flex justify-content-center" *ngIf="offerClicked">
+          <!-- 10% discount -->
+          <img (click)="discount(10)" *ngIf="totalprice<500" height="100px" width="100px"
+            src="https://thumbs.dreamstime.com/b/gold-glitter-text-ten-percent-off-discount-sale-banner-104060613.jpg"
+            alt="">
+
+          <!-- 50% discount -->
+          <img (click)="discount(50)" *ngIf="totalprice>1000" height="100px" width="100px"
+            src="https://www.shutterstock.com/image-vector/50-off-sign-percent-discount-260nw-1934922404.jpg" alt="">
+        </div>
+
+        <!-- make payment -->
+        <div *ngIf="discountClicks && !showPaypalStatus" class="d-flex justify-content-center">
+          <button (click)="paypalPay()" class="btn btn-success">Make Payment</button>
+        </div>
+        <!-- Paypal button -->
+        <div *ngIf="showPaypalStatus">
+          <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

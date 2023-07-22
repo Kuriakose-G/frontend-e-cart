@@ -1,0 +1,38 @@
+                                                  E-Commerce FrontEnd
+                                     ---------------------------------------------
+
+1. Lazy Loading - It helps keep initial bundle sizes smaller, which in turn helps decrease load times
+    ->Module Generation - "ng g m products --route products --module app.module"
+
+    Component create inside the 'products' module
+      ->ng g c products/allProducts
+      ->ng g c products/viewProducts
+      ->ng g c products/cart 
+      ->ng g c products/wishlist
+
+    Not included in 'products module'
+       ->ng g c header
+       ->ng g c footer
+       ->ng g c pageNotFound
+
+2. Setup paths
+   http://localhost:4200 =>> http://localhost:4200/products/allProducts
+
+   ->products.routing
+
+3. Backend creation
+
+4. API integration
+    ->Create api function in api.services
+    ->call that function in corresponding Component
+    ->Display the details of the product
+    ->Wishlist integration
+
+5. Search
+    ->"ng g p products/pipes/filter"
+
+6. Behavior subject
+    ->It is used to share stream of data from one component to another
+    ->Its under the rxjs library
+    ->Its a asynchronous function
+    ->next() method is used to attach the data
